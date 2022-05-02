@@ -160,6 +160,7 @@
                 d3.select('#svg_text')
                     .html('')
                 ;
+
                 var str = String.fromCodePoint(code_point);
                 var font = openTypeFont;
                 var glyph = font.stringToGlyphs(str)[0];
@@ -167,24 +168,24 @@
                     var p = new MyPath();
                     var c = [];
                     for (let i = 0; i < commands.length; i += 1) {
-                        const cmd = commands[i];
+						const cmd = commands[i];
                         if (cmd.type === 'M') {
-                            p.moveTo(cmd.x, height-cmd.y);
+							p.moveTo(cmd.x, height-cmd.y);
                             c.push([cmd.x, height-cmd.y]);
                         } else if (cmd.type === 'L') {
-                            p.lineTo(cmd.x, height-cmd.y);
+							p.lineTo(cmd.x, height-cmd.y);
                             c.push([cmd.x, height-cmd.y]);
                         } else if (cmd.type === 'Q') {
-                            p.quadraticCurveTo(cmd.x1, height-cmd.y1, cmd.x, height-cmd.y);
+							p.quadraticCurveTo(cmd.x1, height-cmd.y1, cmd.x, height-cmd.y);
                             c.push([cmd.x1, height-cmd.y1]);
                             c.push([cmd.x, height-cmd.y]);
                         } else if (cmd.type === 'C') {
-                            p.curveTo(cmd.x1, height-cmd.y1,cmd.x2,height-cmd.y2,cmd.x, height-cmd.y);
+							p.curveTo(cmd.x1, height-cmd.y1,cmd.x2,height-cmd.y2,cmd.x, height-cmd.y);
                             c.push([cmd.x1, height-cmd.y1]);
                             c.push([cmd.x2,height-cmd.y2]);
                             c.push([cmd.x, height-cmd.y]);
                         } else if (cmd.type === 'Z') {
-                            p.closePath();
+							p.closePath();
                         }
                     }
                     return [ p, c ];
@@ -192,20 +193,34 @@
                 var svgPathObj = mkPath(glyph.path.commands, font.unitsPerEm);
                 var tmpPath = svgPathObj[0];
                 var svg3 = d3.select('#svg_image')
-                                .append('svg')
-                                .attr("xmlns", 'http://www.w3.org/2000/svg')
-                                .attr("xmlns:svg", 'http://www.w3.org/2000/svg')
-                                .attr("xmlns:xlink", 'http://www.w3.org/1999/xlink')
-                                .attr('viewBox', [0, -glyph.yMin, font.unitsPerEm, font.unitsPerEm].join(' '))
+				.append('svg')
+				.attr("xmlns", 'http://www.w3.org/2000/svg')
+				.attr("xmlns:svg", 'http://www.w3.org/2000/svg')
+				.attr("xmlns:xlink", 'http://www.w3.org/1999/xlink')
+				.attr('viewBox', [0, -glyph.yMin, font.unitsPerEm, font.unitsPerEm].join(' '))
                 ;
                 svg3.append('path')
-                    .attr('d', tmpPath.toPathData())
-                    .attr('class', 'font-svg')
+				.attr('d', tmpPath.toPathData())
+				.attr('class', 'font-svg')
                 ;
                 d3.select('#svg_text')
-                    .html(svg3.node().outerHTML)
+				.html(svg3.node().outerHTML)
                 ;
                 svgHTML = svg3.node().outerHTML;
+
+				var showPoints = document.getElementById("point-switch").checked;
+				var dots = svgPathObj[1];
+				if (!showPoints) {
+					for (let i = 0; i < dots.length; i++) {
+						svg3.append('circle')
+							.attr('cx', dots[i][0])
+							.attr('cy', dots[i][1])
+							.attr('r', 30)
+							.attr('stroke', 'black')
+							.attr('fill', 'red')
+					}
+				}
+
             }
 			console.log('end create_font_svg()...');
 		};
@@ -494,9 +509,9 @@
 			//第3個參數為 完成狀況，有完成 true/未完成 false
 			//有幾個項目就呼叫幾個 addChild
 			//addChild 要比 renderModal 先呼叫
-			so.addChild("字型檔手動讀取", 6, false);
-			so.addChild("字型檔自動讀取", 2, false);
-			so.addChild("字型描點", 2, false);
+			so.addChild("字型檔手動讀取", 6, true);
+			so.addChild("字型檔自動讀取", 2, true);
+			so.addChild("字型描點", 2, true);
 
 			//產生自評表，參數如下所示
 			so.renderModal(
